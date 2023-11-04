@@ -22,13 +22,14 @@ WriteLine(); WriteLine();
 
 if (key is ConsoleKey.D1 or ConsoleKey.NumPad1)
 {
-  builder.DataSource = "."; // Local SQL Server
+  // builder.DataSource = "."; // Local SQL Server
+  builder.DataSource = Environment.GetEnvironmentVariable("DUSIP"); ;
   // @".\net7book"; // Local SQL Server with an instance name
 }
 else if (key is ConsoleKey.D2 or ConsoleKey.NumPad2)
 {
   builder.DataSource = // Azure SQL Database
-    "tcp:apps-services-net7.database.windows.net,1433"; 
+    "tcp:apps-services-net7.database.windows.net,1433";
 }
 else if (key is ConsoleKey.D3 or ConsoleKey.NumPad3)
 {
@@ -55,18 +56,18 @@ if (key is ConsoleKey.D1 or ConsoleKey.NumPad1)
 }
 else if (key is ConsoleKey.D2 or ConsoleKey.NumPad2)
 {
-  builder.UserID = "sa"; // Azure SQL Edge
-    // "markjprice"; // change to your username
+  builder.UserID = "dustech"; // Azure SQL Edge
+                              // "markjprice"; // change to your username
 
   Write("Enter your SQL Server password: ");
-  string? password = ReadLine();
-  if (string.IsNullOrWhiteSpace(password))
-  {
-    WriteLine("Password cannot be empty or null.");
-    return;
-  }
+  // string? password = ReadLine();
+  // if (string.IsNullOrWhiteSpace(password))
+  // {
+  //   WriteLine("Password cannot be empty or null.");
+  //   return;
+  // }
 
-  builder.Password = password;
+  builder.Password = Environment.GetEnvironmentVariable("SQLPASSWORD"); // password;
   builder.PersistSecurityInfo = false;
 }
 else
@@ -85,7 +86,7 @@ connection.InfoMessage += Connection_InfoMessage;
 
 try
 {
-  WriteLine("Opening connection. Please wait up to {0} seconds...", 
+  WriteLine("Opening connection. Please wait up to {0} seconds...",
     builder.ConnectTimeout);
   WriteLine();
 
