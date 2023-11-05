@@ -5,6 +5,70 @@ using System.Resources; // ResourceManager
 
 
 // Supplier class is defined in Supplier.cs
+ResourceManager rm = new("Northwind.Console.SqlClient.db.category.Category.sql",
+            typeof(Program).Assembly);
+string myString = rm.GetString("GetCategoryPlus") ?? "";
+
+WriteLine(myString);
+
+SqlConnectionStringBuilder builder = new();
+
+builder.InitialCatalog = "Northwind";
+builder.MultipleActiveResultSets = true;
+builder.Encrypt = true;
+builder.TrustServerCertificate = true;
+builder.ConnectTimeout = 10;
+
+builder.DataSource = Environment.GetEnvironmentVariable("DUSIP");
+builder.UserID = "dustech";
+builder.Password = Environment.GetEnvironmentVariable("SQLPASSWORD"); // password;
+builder.PersistSecurityInfo = false;
+
+SqlConnection connection = new(builder.ConnectionString);
+
+WriteLine(connection.ConnectionString);
+WriteLine();
+
+connection.StateChange += Connection_StateChange;
+connection.InfoMessage += Connection_InfoMessage;
+try
+{
+  WriteLine("Opening connection. Please wait up to {0} seconds...",
+    builder.ConnectTimeout);
+  WriteLine();
+
+  await connection.OpenAsync();
+
+  WriteLine($"SQL Server version: {connection.ServerVersion}");
+
+  connection.StatisticsEnabled = true;
+}
+catch (SqlException ex)
+{
+  WriteLine($"SQL exception: {ex.Message}");
+  return;
+}
+
+SqlCommand cmd = connection.CreateCommand();
+
+cmd.CommandType = CommandType.Text;
+
+cmd.CommandText = myString;
+
+cmd.Parameters.AddWithValue("categoryId", 1);
+
+SqlDataReader r = await cmd.ExecuteReaderAsync();
+
+while (await r.ReadAsync())
+{
+  WriteLine("| {0,5} |",
+    await r.GetFieldValueAsync<string>("CategoryName"));
+}
+
+await r.CloseAsync();
+
+/*
+// Supplier class is defined in Supplier.cs
 ResourceManager rm = new("Northwind.Console.SqlClient.db.supplier.Supplier",
             typeof(Program).Assembly);
 string myString = rm.GetString("GetSupplier") ?? "";
@@ -210,3 +274,5 @@ foreach (Supplier supplier in suppliers)
 }
 
 await connection.CloseAsync();
+
+*/

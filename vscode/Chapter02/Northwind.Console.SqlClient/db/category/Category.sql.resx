@@ -121,4 +121,13 @@
     <value>SELECT [CategoryId]       ,[CategoryName]       ,[Description]       ,[Picture]       ,[PollettoCount]       ,'Marcuzio' as [Procion]   FROM [Northwind].[dbo].[Categories]</value>
     <comment/>
   </data>
+  <data name="GetCategoryPlus" xml:space="preserve">
+    <value>
+
+select * from dbo.Categories as C
+where c.CategoryId=@categoryId
+
+</value>
+    <comment/>
+  </data>
 </root>
