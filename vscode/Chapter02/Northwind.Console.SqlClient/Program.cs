@@ -1,6 +1,13 @@
 ﻿using Dapper; // Query<T> extension method
 using Microsoft.Data.SqlClient; // SqlConnection and so on
 using System.Data; // CommandType
+using System.Resources; // ResourceManager
+
+
+// Supplier class is defined in Supplier.cs
+ResourceManager rm = new("Northwind.Console.SqlClient.db.supplier.Supplier",
+            typeof(Program).Assembly);
+string myString = rm.GetString("GetSupplier") ?? "";
 
 SqlConnectionStringBuilder builder = new();
 
@@ -189,10 +196,10 @@ WriteLine("**********************");
 WriteLine("* Dapper exploration *");
 WriteLine("**********************");
 
-// Supplier class is defined in Supplier.cs
+
 
 IEnumerable<Supplier> suppliers = connection.Query<Supplier>(
-  sql: "SELECT * FROM Suppliers WHERE Country=@Country",
+  sql: myString,
   param: new { Country = "Germany" });
 
 foreach (Supplier supplier in suppliers)
